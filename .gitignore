@@ -1,0 +1,63 @@
+# Environment & Secrets (SANGAT PENTING: Jangan push API key ke GitHub!)
+.env
+*.env
+backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+backend/.venv/
+.venv/
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+
+# Databases & Cache
+*.sqlite3
+*.db
+backend/cache/
+cache/
+*.json3
+
+# Temporary audio files
+lingostream_audio_*
+*.m4a
+*.mp3
+*.wav
+
+# Flutter / Dart
+.dart_tool/
+.packages
+frontend_flutter/.dart_tool/
+frontend_flutter/.packages
+frontend_flutter/build/
+frontend_flutter/.flutter-plugins
+frontend_flutter/.flutter-plugins-dependencies
+
+# IDE
+.vscode/*
+!.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
