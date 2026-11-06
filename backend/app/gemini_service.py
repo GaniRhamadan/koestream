@@ -47,11 +47,13 @@ class GeminiService:
 
     def __init__(self, api_key: Optional[str] = None, model_name: Optional[str] = None):
         self.api_key = api_key or os.getenv("GEMINI_API_KEY", "").strip()
-        self.model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-3.5-flash").strip()
+        self.model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-3.5-flash-lite").strip()
         self.client = None
         if HAS_GEMINI_SDK and self.api_key:
             try:
-                self.client = genai.Client(api_key=self.api_key)
+                # Batasi timeout 10000ms pada client agar tidak freeze/hang jika jaringan lambat
+                http_opts = types.HttpOptions(timeout=10000) if hasattr(types, "HttpOptions") else None
+                self.client = genai.Client(api_key=self.api_key, http_options=http_opts) if http_opts else genai.Client(api_key=self.api_key)
                 logger.info("GeminiService berhasil diinisialisasi dengan model: %s", self.model_name)
             except Exception as e:
                 logger.error("Gagal menginisialisasi Google GenAI client: %s", e)
@@ -168,7 +170,7 @@ KEMBALIKAN HANYA ARRAY JSON VALID tanpa markdown dan tanpa teks lain:
         if not self.is_available() or not sentences:
             return {}
 
-        candidate_models = [self.model_name, "gemini-3.8-flash", "gemini-flash-latest", "gemini-3.5-flash"]
+        candidate_models = [self.model_name, "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest"]
         # Hilangkan duplikat sambil mempertahankan urutan
         models_to_try = list(dict.fromkeys([m for m in candidate_models if m]))
 
@@ -228,22 +230,28 @@ KEMBALIKAN HANYA ARRAY JSON VALID:
         if not self.is_available():
             return None
 
-        try:
-            prompt = f"""
+        prompt = f"""
 Jelaskan tata bahasa kalimat berikut untuk seorang pembelajar bahasa.
 Kalimat ({target_lang}): "{sentence}"
 Bahasa penjelasan: {native_lang}
 
-Berikan penjelasan ringkas, terstruktur, dan ramah:
-1. Terjemahan alami dan konteks penggunaannya (sopan/santai/gaul).
-2. Poin tata bahasa penting (fungsi partikel, konjugasi kata kerja, atau pola kalimat).
+Berikan penjelasan ringkas, terstruktur, ramah, dan mendidik:
+1. Terjemahan alami dan konteks penggunaannya (sopan/santai/lirik lagu).
+2. Poin tata bahasa penting (fungsi partikel, konjugasi kata kerja, bentuk negatif/potensial, atau pola kalimat).
 3. Nuansa budaya atau tips menghafalnya.
 """
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-            )
-            return response.text.strip()
-        except Exception as e:
-            logger.error("Gemini explain grammar error: %s", e)
-            return None
+        candidate_models = [self.model_name, "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-flash-latest"]
+        models_to_try = list(dict.fromkeys([m for m in candidate_models if m]))
+
+        for model in models_to_try:
+            try:
+                response = self.client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                )
+                if response and response.text:
+                    return response.text.strip()
+            except Exception as e:
+                logger.warning("Gemini explain grammar gagal dengan model '%s': %s", model, e)
+
+        return None

@@ -192,9 +192,17 @@ class DictionaryService:
         except Exception as e:
             logger.warning("Gagal menginisialisasi SQLite dictionary cache: %s", e)
 
-    def lookup(self, word: str, target_lang: str, native_lang: str = "id") -> Dict[str, Any]:
+    def lookup(
+        self,
+        word: str,
+        target_lang: str,
+        native_lang: str = "id",
+        allow_online: bool = False
+    ) -> Dict[str, Any]:
         """
-        Mencari definisi kata: Offline Core -> Cache SQLite -> Deep-Translator Fallback.
+        Mencari definisi kata: Offline Core -> Cache SQLite -> (Opsional) Deep-Translator Fallback.
+        Saat allow_online=False (default untuk tokenisasi video/kalimat), pencarian 100% lokal
+        tanpa blocking HTTP request ke internet sehingga ribuan kata diproses instan (< 0.05 detik).
         """
         clean_word = word.strip()
         if not clean_word:
@@ -231,15 +239,16 @@ class DictionaryService:
         except Exception as e:
             logger.debug("Error saat membaca SQLite word cache: %s", e)
 
-        # 3. Fallback deep-translator
-        translated_meaning = self._translate_online(clean_word, target_lang, native_lang)
-        if translated_meaning:
-            self._save_to_cache(target_lang, clean_word, native_lang, translated_meaning)
-            return {
-                "meanings": [translated_meaning],
-                "pos": "OTHER",
-                "proficiency_tag": None
-            }
+        # 3. Fallback online HANYA jika diminta eksplisit (misal saat pengguna mengklik satu kata tertentu)
+        if allow_online:
+            translated_meaning = self._translate_online(clean_word, target_lang, native_lang)
+            if translated_meaning:
+                self._save_to_cache(target_lang, clean_word, native_lang, translated_meaning)
+                return {
+                    "meanings": [translated_meaning],
+                    "pos": "OTHER",
+                    "proficiency_tag": None
+                }
 
         return {"meanings": [], "pos": "OTHER", "proficiency_tag": None}
 

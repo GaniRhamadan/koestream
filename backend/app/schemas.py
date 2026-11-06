@@ -69,19 +69,24 @@ class TranscriptSegment(BaseModel):
 
 class VideoProcessRequest(BaseModel):
     """
-    Permintaan proses video YouTube.
+    Permintaan proses media (YouTube atau Spotify).
     """
-    youtube_url: str
+    youtube_url: str = ""
+    media_url: Optional[str] = None
     target_lang: str = "ja"
     native_lang: str = "id"
     known_lemmas: List[str] = Field(default_factory=list)
     max_segments: int = 200
     demo: bool = False
 
+    @property
+    def effective_url(self) -> str:
+        return (self.media_url or self.youtube_url or "").strip()
+
 
 class VideoTranscriptResponse(BaseModel):
     """
-    Respons transkrip video lengkap beserta metadata dan pipeline engine yang digunakan.
+    Respons transkrip video/audio lengkap beserta metadata, Spotify info, dan pipeline engine yang digunakan.
     """
     video_id: str
     title: str
@@ -89,6 +94,14 @@ class VideoTranscriptResponse(BaseModel):
     language: str
     writing_direction: Literal["ltr", "rtl"] = "ltr"
     source_type: str
+    spotify_id: Optional[str] = None
+    spotify_embed_url: Optional[str] = None
+    thumbnail_url: Optional[str] = None
+    artist: Optional[str] = None
+    duration_ms: Optional[int] = None
+    duration: Optional[int] = None
+    audio_url: Optional[str] = None
+    matched_yt_id: Optional[str] = None
     engine_used: Dict[str, str] = Field(default_factory=dict)
     truncated: bool = False
     segments: List[TranscriptSegment] = Field(default_factory=list)

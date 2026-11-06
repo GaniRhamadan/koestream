@@ -1,0 +1,65 @@
+nohup: ignoring input
+INFO:     Will watch for changes in these directories: ['/home/gani/aplikasi_bljr_Bahasa/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [239855] using WatchFiles
+INFO:     Started server process [239864]
+INFO:     Waiting for application startup.
+2026-11-06 20:13:14,819 [INFO] lingostream.main: Memulai server LingoStream Universal...
+2026-11-06 20:13:14,819 [INFO] lingostream.main: Database cache kamus siap digunakan.
+INFO:     Application startup complete.
+2026-11-06 20:14:46,136 [INFO] app.gemini_service: GeminiService berhasil diinisialisasi dengan model: gemini-3.5-flash-lite
+INFO:     127.0.0.1:37842 - "GET /api/v1/health HTTP/1.1" 200 OK
+2026-11-06 20:16:05,204 [INFO] app.youtube: Auto-matched Spotify '不可思議のカルテ' -> YouTube ID 'YjrSkBjDVEw' (durasi: 240s)
+WARNING: [youtube] No supported JavaScript runtime could be found. Only deno is enabled by default; to use another runtime add  --js-runtimes RUNTIME[:PATH]  to your command/config. YouTube extraction without a JS runtime has been deprecated, and some formats may be missing. See  https://github.com/yt-dlp/yt-dlp/wiki/EJS  for details on installing one
+[download]   0.0% of    3.85MiB at  668.84KiB/s ETA 00:06[download]   0.1% of    3.85MiB at  912.53KiB/s ETA 00:04[download]   0.2% of    3.85MiB at    1.81MiB/s ETA 00:02[download]   0.4% of    3.85MiB at    3.46MiB/s ETA 00:01[download]   0.8% of    3.85MiB at    3.46MiB/s ETA 00:01[download]   1.6% of    3.85MiB at    2.89MiB/s ETA 00:01[download]   3.2% of    3.85MiB at    3.82MiB/s ETA 00:00[download]   6.5% of    3.85MiB at    4.47MiB/s ETA 00:00[download]  13.0% of    3.85MiB at    6.19MiB/s ETA 00:00[download]  25.9% of    3.85MiB at    6.59MiB/s ETA 00:00[download]  51.9% of    3.85MiB at    7.19MiB/s ETA 00:00[download] 100.0% of    3.85MiB at    7.48MiB/s ETA 00:00[download] 100% of    3.85MiB in 00:00:00 at 6.23MiB/s                                                         2026-11-06 20:16:14,272 [INFO] app.youtube: Berhasil mengunduh audio studio penuh untuk 2Zj2AqmjkgpBix8cZAu6iY
+2026-11-06 20:16:14,688 [INFO] app.youtube: Berhasil menyimpan transkrip ke disk cache: /home/gani/aplikasi_bljr_Bahasa/backend/cache/transcript_spotify_2Zj2AqmjkgpBix8cZAu6iY_ja_id.json
+INFO:     127.0.0.1:34864 - "POST /api/v1/process-video HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34864 - "GET /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:50516 - "HEAD /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 404 Not Found
+WARNING:  WatchFiles detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-11-06 20:19:50,233 [INFO] lingostream.main: Mematikan server LingoStream Universal...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [239864]
+INFO:     Started server process [240908]
+INFO:     Waiting for application startup.
+2026-11-06 20:19:57,771 [INFO] lingostream.main: Memulai server LingoStream Universal...
+2026-11-06 20:19:57,771 [INFO] lingostream.main: Database cache kamus siap digunakan.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:34008 - "HEAD /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:33130 - "GET /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'app/main.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-11-06 20:20:25,744 [INFO] lingostream.main: Mematikan server LingoStream Universal...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [240908]
+INFO:     Started server process [241109]
+INFO:     Waiting for application startup.
+2026-11-06 20:20:32,954 [INFO] lingostream.main: Memulai server LingoStream Universal...
+2026-11-06 20:20:32,955 [INFO] lingostream.main: Database cache kamus siap digunakan.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:59464 - "HEAD /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51700 - "HEAD /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 206 Partial Content
+INFO:     127.0.0.1:42270 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42270 - "GET /css/styles.css?v=4.0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42284 - "GET /js/fsrs.js?v=4.0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42270 - "GET /js/shadowing.js?v=4.0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42270 - "GET /js/api.js?v=4.0 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42270 - "GET /js/app.js?v=4.0 HTTP/1.1" 200 OK
+2026-11-06 20:24:45,803 [INFO] app.youtube: Auto-matched Spotify '光るなら' -> YouTube ID 'SnXkhkEvNIM' (durasi: 259s)
+2026-11-06 20:24:50,051 [INFO] app.youtube: Berhasil menyimpan transkrip ke disk cache: /home/gani/aplikasi_bljr_Bahasa/backend/cache/transcript_spotify_2BlDX1yfT0ea5wo0vjCKKa_ja_id.json
+INFO:     127.0.0.1:42270 - "POST /api/v1/process-video HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42270 - "GET /cache/audio_spotify_2BlDX1yfT0ea5wo0vjCKKa.mp3 HTTP/1.1" 206 Partial Content
+2026-11-06 20:24:56,833 [INFO] app.youtube: Auto-matched Spotify '不可思議のカルテ' -> YouTube ID 'YjrSkBjDVEw' (durasi: 240s)
+2026-11-06 20:24:56,999 [INFO] app.youtube: Berhasil menyimpan transkrip ke disk cache: /home/gani/aplikasi_bljr_Bahasa/backend/cache/transcript_spotify_2Zj2AqmjkgpBix8cZAu6iY_ja_id.json
+INFO:     127.0.0.1:42270 - "POST /api/v1/process-video HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42270 - "GET /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 206 Partial Content
+INFO:     127.0.0.1:45448 - "GET /cache/audio_spotify_2Zj2AqmjkgpBix8cZAu6iY.mp3 HTTP/1.1" 206 Partial Content
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+2026-11-06 20:32:22,867 [INFO] lingostream.main: Mematikan server LingoStream Universal...
+INFO:     Application shutdown complete.
+INFO:     Finished server process [241109]
+INFO:     Stopping reloader process [239855]

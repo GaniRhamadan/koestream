@@ -33,6 +33,21 @@ async def lifespan(app: FastAPI):
     # Inisialisasi layanan kamus SQLite
     DictionaryService.get_instance()
     logger.info("Database cache kamus siap digunakan.")
+
+    # Otomatis aktifkan port forwarding adb reverse jika HP Android terhubung via USB
+    try:
+        import subprocess
+        res = subprocess.run(
+            ["adb", "reverse", "tcp:8000", "tcp:8000"],
+            capture_output=True,
+            text=True,
+            timeout=2
+        )
+        if res.returncode == 0:
+            logger.info("Otomatis mengaktifkan: adb reverse tcp:8000 tcp:8000 (Android terhubung).")
+    except Exception as e:
+        logger.debug("ADB reverse lewati: %s", e)
+
     yield
     logger.info("Mematikan server LingoStream Universal...")
 
@@ -65,6 +80,34 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Middleware Header Keamanan (Anti-XSS, Anti-MIME Sniff, Anti-Clickjacking, Anti-Ad Sandbox)
+@app.middleware("http")
+async def security_headers_middleware(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "script-src 'self' 'unsafe-inline' https://www.youtube.com https://www.youtube-nocookie.com https://s.ytimg.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com data:; "
+        "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://open.spotify.com; "
+        "img-src 'self' data: blob: https:; "
+        "media-src 'self' blob: data: https:; "
+        "connect-src 'self' http: https: ws: wss:; "
+        "object-src 'none'; "
+        "base-uri 'self';"
+    )
+    path = request.url.path.lower()
+    if path == "/" or path.endswith(".html") or path.endswith(".js") or path.endswith(".css"):
+        response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "0"
+
+    return response
 
 # =====================================================================
 # PENANGANAN ERROR TERSTRUKTUR DENGAN FORMAT {detail, code}
@@ -112,12 +155,32 @@ async def global_exception_handler(request: Request, exc: Exception):
 # Registrasi Router API v1
 app.include_router(api_v1_router)
 
+# Penyajian File Cache (Audio MP3 & Transkrip JSON)
+# Mendukung pengecekan ganda di backend/cache maupun root/cache dengan dukungan streaming audio range
+from fastapi.responses import FileResponse
 
-@app.get("/")
-async def root():
-    return {
-        "app": "LingoStream Universal API",
-        "status": "online",
-        "documentation": "/docs",
-        "health": "/api/v1/health",
-    }
+@app.api_route("/cache/{filename:path}", methods=["GET", "HEAD"])
+async def serve_cached_file(filename: str):
+    clean_name = os.path.basename(filename)
+    cand_backend = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "cache", clean_name))
+    cand_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cache", clean_name))
+
+    for cand in [cand_backend, cand_root]:
+        if os.path.isfile(cand):
+            return FileResponse(cand)
+
+    raise HTTPException(status_code=404, detail="File cache audio tidak ditemukan.")
+
+web_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "frontend_web"))
+if os.path.exists(web_dir):
+    from fastapi.staticfiles import StaticFiles
+    app.mount("/", StaticFiles(directory=web_dir, html=True), name="frontend_web")
+else:
+    @app.get("/")
+    async def root():
+        return {
+            "app": "KoeStream Universal API",
+            "status": "online",
+            "documentation": "/docs",
+            "health": "/api/v1/health",
+        }

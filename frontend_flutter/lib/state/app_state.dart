@@ -69,6 +69,13 @@ class AppState extends ChangeNotifier {
     if (customUrl != null && customUrl.isNotEmpty) {
       _apiService.setBaseUrl(customUrl);
     }
+    // Otomatis deteksi alamat backend aktif di latar belakang (ADB reverse / LAN / Emul)
+    _apiService.autoDiscoverBaseUrl().then((foundUrl) {
+      if (foundUrl != null) {
+        _storageService.saveCustomApiBaseUrl(foundUrl);
+        notifyListeners();
+      }
+    });
     notifyListeners();
   }
 

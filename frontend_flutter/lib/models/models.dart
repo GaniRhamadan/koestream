@@ -198,6 +198,11 @@ class VideoTranscriptResponse {
   final String language;
   final String writingDirection;
   final String sourceType;
+  final String? spotifyId;
+  final String? spotifyEmbedUrl;
+  final String? thumbnailUrl;
+  final String? artist;
+  final String? matchedYtId;
   final Map<String, String> engineUsed;
   final bool truncated;
   final List<TranscriptSegment> segments;
@@ -209,12 +214,18 @@ class VideoTranscriptResponse {
     required this.language,
     this.writingDirection = 'ltr',
     required this.sourceType,
+    this.spotifyId,
+    this.spotifyEmbedUrl,
+    this.thumbnailUrl,
+    this.artist,
+    this.matchedYtId,
     this.engineUsed = const {},
     this.truncated = false,
     this.segments = const [],
   });
 
   bool get isRtl => writingDirection.toLowerCase() == 'rtl';
+  bool get isSpotify => sourceType.toLowerCase() == 'spotify' || videoId.startsWith('spotify_');
 
   factory VideoTranscriptResponse.fromJson(Map<String, dynamic> json) {
     final engineMap = <String, String>{};
@@ -231,6 +242,11 @@ class VideoTranscriptResponse {
       language: json['language'] as String? ?? 'ja',
       writingDirection: json['writing_direction'] as String? ?? 'ltr',
       sourceType: json['source_type'] as String? ?? 'unknown',
+      spotifyId: json['spotify_id'] as String?,
+      spotifyEmbedUrl: json['spotify_embed_url'] as String?,
+      thumbnailUrl: json['thumbnail_url'] as String?,
+      artist: json['artist'] as String?,
+      matchedYtId: json['matched_yt_id'] as String?,
       engineUsed: engineMap,
       truncated: json['truncated'] as bool? ?? false,
       segments: (json['segments'] as List<dynamic>?)
@@ -247,11 +263,111 @@ class VideoTranscriptResponse {
     'language': language,
     'writing_direction': writingDirection,
     'source_type': sourceType,
+    'spotify_id': spotifyId,
+    'spotify_embed_url': spotifyEmbedUrl,
+    'thumbnail_url': thumbnailUrl,
+    'artist': artist,
     'engine_used': engineUsed,
     'truncated': truncated,
     'segments': segments.map((e) => e.toJson()).toList(),
   };
 }
+
+class MediaTrack {
+  final String id;
+  final String title;
+  final String artist;
+  final String album;
+  final String duration;
+  final String type;
+  final String url;
+  final String artwork;
+  final String language;
+  final String langName;
+  final String description;
+
+  const MediaTrack({
+    required this.id,
+    required this.title,
+    required this.artist,
+    required this.album,
+    required this.duration,
+    required this.type,
+    required this.url,
+    required this.artwork,
+    required this.language,
+    required this.langName,
+    required this.description,
+  });
+}
+
+const List<MediaTrack> kKoeStreamPresetTracks = [
+  MediaTrack(
+    id: '4Mo0vn7a03pJ19uESUrH5a',
+    title: '可愛くてごめん',
+    artist: 'HoneyWorks feat. ちゅーたん',
+    album: '可愛くてごめん',
+    duration: '03:39',
+    type: 'spotify',
+    url: 'https://open.spotify.com/track/4Mo0vn7a03pJ19uESUrH5a',
+    artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0266e246eec1f1fb552ed0f017',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Lagu J-Pop viral HoneyWorks dengan lirik ceria dan kosa kata percakapan Jepang sehari-hari.',
+  ),
+  MediaTrack(
+    id: '1HNvADmPBGAExeyIHkcJtd',
+    title: 'スパークル (Sparkle)',
+    artist: 'RADWIMPS',
+    album: 'Human Bloom (Kimi no Na wa)',
+    duration: '06:50',
+    type: 'spotify',
+    url: 'https://open.spotify.com/track/1HNvADmPBGAExeyIHkcJtd',
+    artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0285b0876389c92ac31f514593',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Soundtrack legendaris anime Your Name karya Makoto Shinkai & RADWIMPS.',
+  ),
+  MediaTrack(
+    id: 'by4SYYWlhEs',
+    title: '夜に駆ける (Yoru ni Kakeru)',
+    artist: 'YOASOBI',
+    album: 'THE BOOK',
+    duration: '04:21',
+    type: 'spotify',
+    url: 'https://open.spotify.com/track/4Mo0vn7a03pJ19uESUrH5a?song=yoasobi',
+    artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02baf89eb11ec7c657805d2da0',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Lagu debut fenomena global YOASOBI terinspirasi novel Thanatos no Yuuwaku.',
+  ),
+  MediaTrack(
+    id: '9bZkp7q19f0',
+    title: '日常会話 - カフェでの待ち合わせ',
+    artist: 'Anime Immersion Audio #04',
+    album: 'Anime Nihongo Vol. 1',
+    duration: '00:45',
+    type: 'youtube',
+    url: 'https://www.youtube.com/watch?v=9bZkp7q19f0',
+    artwork: 'https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Dialog percakapan anime dasar untuk mengasah pendengaran dan penguasaan partikel.',
+  ),
+  MediaTrack(
+    id: '4GfK1qOF3uBWidbPlTCQRL',
+    title: 'Monokrom',
+    artist: 'Tulus',
+    album: 'Monokrom',
+    duration: '03:34',
+    type: 'spotify',
+    url: 'https://open.spotify.com/track/4GfK1qOF3uBWidbPlTCQRL',
+    artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02fdb8b5fa2f0fcf71d18f50c0',
+    language: 'id',
+    langName: 'Indonesia',
+    description: 'Karya nostalgia Tulus dengan lirik puitis dan hangat tentang kenangan masa lalu.',
+  ),
+];
 
 class FSRSPreview {
   final int rating;

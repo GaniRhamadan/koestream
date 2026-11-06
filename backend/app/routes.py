@@ -11,12 +11,24 @@ Menyediakan semua endpoint:
 - POST /srs/schedule
 """
 
+import re
 import uuid
+import asyncio
 import json
 import logging
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends, Request
 from fastapi.concurrency import run_in_threadpool
+
+def sanitize_text(text: str) -> str:
+    """Membersihkan teks input dari injeksi script dan tag HTML berbahaya."""
+    if not text:
+        return ""
+    # Hapus tag <script>...</script>
+    cleaned = re.sub(r'<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>', '', text, flags=re.IGNORECASE)
+    # Hapus tag HTML berbahaya seperti iframe, object, embed, style, meta, link
+    cleaned = re.sub(r'<\/?(script|iframe|object|embed|style|meta|link)\b[^>]*>', '', cleaned, flags=re.IGNORECASE)
+    return cleaned.strip()
 
 from app.schemas import (
     VideoProcessRequest,
@@ -105,7 +117,7 @@ async def process_video(request: VideoProcessRequest):
     try:
         response = await run_in_threadpool(
             _youtube_service.process_video,
-            youtube_url=request.youtube_url,
+            youtube_url=request.effective_url,
             target_lang=request.target_lang,
             native_lang=request.native_lang,
             known_lemmas=request.known_lemmas,
@@ -140,7 +152,7 @@ async def process_video_async(request: VideoProcessRequest):
         try:
             res = await run_in_threadpool(
                 _youtube_service.process_video,
-                youtube_url=request.youtube_url,
+                youtube_url=request.effective_url,
                 target_lang=request.target_lang,
                 native_lang=request.native_lang,
                 known_lemmas=request.known_lemmas,
@@ -189,7 +201,7 @@ async def analyze_text(request: AnalyzeTextRequest):
     """
     Menganalisis kalimat bebas tanpa konteks video.
     """
-    clean_text = request.text.strip()
+    clean_text = sanitize_text(request.text)
     if not clean_text:
         raise HTTPException(status_code=400, detail="Teks kalimat tidak boleh kosong.")
 
@@ -212,7 +224,7 @@ async def translate_sentence(request: TranslateSentenceRequest):
     """
     Menerjemahkan satu kalimat secara on-demand dengan perlindungan timeout dan caching SQLite.
     """
-    clean_text = request.sentence.strip()
+    clean_text = sanitize_text(request.sentence)
     if not clean_text:
         raise HTTPException(status_code=400, detail="Kalimat tidak boleh kosong.")
 
@@ -234,8 +246,9 @@ async def translate_sentence(request: TranslateSentenceRequest):
 async def explain_grammar(request: GrammarExplainRequest):
     """
     Menjelaskan tata bahasa kalimat secara terstruktur tanpa data fiktif.
+    Dilengkapi timeout perlindungan dan fallback morfologis linguistik lokal.
     """
-    clean_sentence = request.sentence.strip()
+    clean_sentence = sanitize_text(request.sentence)
     if not clean_sentence:
         raise HTTPException(status_code=400, detail="Kalimat tidak boleh kosong.")
 
@@ -253,20 +266,54 @@ async def explain_grammar(request: GrammarExplainRequest):
             meaning=meaning_str
         ))
 
-    summary = f"Kalimat '{clean_sentence}' terdiri dari {len(tokens)} token terurai berdasarkan morfologi {request.target_lang}."
-    
-    # Gunakan Gemini AI Tutor untuk penjelasan mendalam jika aktif
+    # Bangun ringkasan morfologi lokal yang rapi dan terstruktur sebagai basis/fallback
+    pos_map_id = {
+        "VERB": "Kata Kerja (Verb)",
+        "NOUN": "Kata Benda (Noun)",
+        "PART": "Partikel Tata Bahasa (Particle)",
+        "ADJ": "Kata Sifat (Adjective)",
+        "ADV": "Kata Keterangan (Adverb)",
+        "AUX": "Kata Bantu / Infleksi (Auxiliary)",
+        "PRON": "Kata Ganti (Pronoun)",
+        "CONJ": "Kata Sambung (Conjunction)",
+        "PUNCT": "Tanda Baca (Punctuation)",
+        "DET": "Penentu / Determiner",
+        "OTHER": "Lainnya"
+    }
+
+    token_lines = []
+    for tok in explanations:
+        pos_str = pos_map_id.get(tok.pos, tok.pos)
+        rule_str = f" • *{tok.rule_note}*" if tok.rule_note else ""
+        lemma_str = f" (Kamus: {tok.lemma})" if tok.lemma and tok.lemma != tok.surface else ""
+        token_lines.append(f"• **{tok.surface}**{lemma_str}: {pos_str}{rule_str} — {tok.meaning}")
+
+    summary = (
+        f"### Analisis Struktur & Morfologi ({request.target_lang.upper()})\n"
+        f"Kalimat ini tersusun dari **{len(tokens)} elemen linguistik**:\n\n"
+        + "\n".join(token_lines)
+    )
+
+    # Gunakan Gemini AI Tutor jika aktif dengan timeout ketat (maksimal 7 detik)
     from app.gemini_service import GeminiService
     gemini_svc = GeminiService.get_instance()
     if gemini_svc.is_available():
-        ai_explanation = await run_in_threadpool(
-            gemini_svc.explain_grammar_ai,
-            sentence=clean_sentence,
-            target_lang=request.target_lang,
-            native_lang=request.native_lang,
-        )
-        if ai_explanation:
-            summary = ai_explanation
+        try:
+            ai_explanation = await asyncio.wait_for(
+                run_in_threadpool(
+                    gemini_svc.explain_grammar_ai,
+                    sentence=clean_sentence,
+                    target_lang=request.target_lang,
+                    native_lang=request.native_lang,
+                ),
+                timeout=7.0
+            )
+            if ai_explanation:
+                summary = ai_explanation
+        except asyncio.TimeoutError:
+            logger.warning("Gemini AI explain_grammar timeout (>7s), menggunakan ringkasan morfologi lokal.")
+        except Exception as e:
+            logger.warning("Gemini AI explain_grammar error: %s, fallback ke ringkasan lokal.", e)
 
     return GrammarExplainResponse(
         sentence=clean_sentence,

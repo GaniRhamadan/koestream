@@ -32,22 +32,87 @@ class ApiService {
     _baseUrl = url;
   }
 
+  /// Mencari URL backend yang aktif secara otomatis tanpa harus mengganti setting manual.
+  Future<String?> autoDiscoverBaseUrl() async {
+    final Set<String> candidates = {
+      _baseUrl,
+      'http://127.0.0.1:8000',
+      'http://localhost:8000',
+      'http://10.0.2.2:8000',       // Android Emulator host loopback
+      'http://192.168.1.15:8000',   // Host LAN Ethernet interface
+      'http://192.168.1.22:8000',   // Host Wi-Fi interface
+      'http://10.19.71.192:8000',   // Host USB Tethering interface
+      'http://10.238.110.202:8000', // Host Wi-Fi interface alternatif
+    };
+
+    // Deteksi IP interface jaringan lokal HP untuk subnet matching otomatis
+    try {
+      final interfaces = await NetworkInterface.list(
+        includeLoopback: false,
+        type: InternetAddressType.IPv4,
+      );
+      for (final iface in interfaces) {
+        for (final addr in iface.addresses) {
+          final ip = addr.address;
+          final lastDot = ip.lastIndexOf('.');
+          if (lastDot != -1) {
+            final prefix = ip.substring(0, lastDot);
+            for (final hostPart in [1, 15, 22, 2, 100, 101, 102, 192]) {
+              candidates.add('http://$prefix.$hostPart:8000');
+            }
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Uji semua kandidat secara paralel dengan timeout responsif (1.5 detik per host)
+    final probes = candidates.map((candidate) async {
+      final clean = candidate.trim().replaceAll(RegExp(r'/+$'), '');
+      try {
+        final uri = Uri.parse('$clean/api/v1/health');
+        final resp = await http.get(uri).timeout(const Duration(milliseconds: 1500));
+        if (resp.statusCode == 200) {
+          final data = jsonDecode(utf8.decode(resp.bodyBytes));
+          if (data is Map && data['status'] == 'healthy') {
+            return clean;
+          }
+        }
+      } catch (_) {}
+      return null;
+    });
+
+    final results = await Future.wait(probes);
+    for (final res in results) {
+      if (res != null) {
+        setBaseUrl(res);
+        return res;
+      }
+    }
+    return null;
+  }
+
   Future<Map<String, dynamic>> checkHealth() async {
     try {
       final uri = Uri.parse('$_baseUrl/api/v1/health');
-      final resp = await http.get(uri).timeout(const Duration(seconds: 5));
+      final resp = await http.get(uri).timeout(const Duration(seconds: 3));
       if (resp.statusCode == 200) {
         return jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
-      } else {
-        throw ApiException(
-          'Server tidak sehat: status ${resp.statusCode}',
-          statusCode: resp.statusCode,
-        );
       }
-    } catch (e) {
-      if (e is ApiException) rethrow;
-      throw ApiException('Gagal terhubung ke server ($_baseUrl): $e');
+    } catch (_) {}
+
+    // Jika gagal pada baseUrl saat ini, lakukan auto-discovery otomatis
+    final discovered = await autoDiscoverBaseUrl();
+    if (discovered != null) {
+      final uri = Uri.parse('$discovered/api/v1/health');
+      final resp = await http.get(uri).timeout(const Duration(seconds: 3));
+      if (resp.statusCode == 200) {
+        return jsonDecode(utf8.decode(resp.bodyBytes)) as Map<String, dynamic>;
+      }
     }
+
+    throw ApiException(
+      'Gagal terhubung ke backend ($_baseUrl). Pastikan server FastAPI di komputer sedang berjalan.',
+    );
   }
 
   Future<VideoTranscriptResponse> processVideo({
@@ -73,7 +138,7 @@ class ApiService {
         uri,
         headers: {'Content-Type': 'application/json; charset=utf-8'},
         body: bodyData,
-      ).timeout(const Duration(seconds: 300));
+      ).timeout(const Duration(seconds: 120));
 
       if (resp.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(utf8.decode(resp.bodyBytes));
@@ -94,7 +159,24 @@ class ApiService {
       }
     } catch (e) {
       if (e is ApiException) rethrow;
-      throw ApiException('Terjadi kendala koneksi ke backend: $e');
+
+      // Coba temukan backend aktif otomatis dan ulangi permintaan jika ditemukan
+      final discovered = await autoDiscoverBaseUrl();
+      if (discovered != null && discovered != _baseUrl) {
+        return processVideo(
+          youtubeUrl: youtubeUrl,
+          targetLang: targetLang,
+          nativeLang: nativeLang,
+          knownLemmas: knownLemmas,
+          maxSegments: maxSegments,
+          demo: demo,
+        );
+      }
+
+      throw ApiException(
+        'Terjadi kendala koneksi ke backend ($_baseUrl): $e.\n'
+        'Tips: Pastikan server di komputer aktif (`uvicorn app.main:app --host 0.0.0.0 --port 8000`).',
+      );
     }
   }
 
