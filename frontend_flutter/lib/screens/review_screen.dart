@@ -183,39 +183,39 @@ class _ReviewScreenState extends State<ReviewScreen> with SingleTickerProviderSt
 
           const SizedBox(height: 16),
 
-          // Tombol Rating 4 Pilihan FSRS (Again, Hard, Good, Easy)
+          // Tombol Rating 4 Pilihan FSRS (1:1 with Web #review-rating-bar)
           if (_isFlipped)
             Row(
               children: [
                 _buildRatingButton(
                   rating: 1,
-                  label: 'Again',
-                  intervalLabel: previews[1] != null ? '${previews[1]!.intervalDays}d' : '<1d',
-                  color: Colors.redAccent,
+                  label: '1. Ulangi',
+                  intervalLabel: '< 10m',
+                  color: const Color(0xFFEF4444),
                   onTap: () => _rateCard(card, 1),
                 ),
                 const SizedBox(width: 8),
                 _buildRatingButton(
                   rating: 2,
-                  label: 'Hard',
-                  intervalLabel: previews[2] != null ? '${previews[2]!.intervalDays}d' : '1d',
-                  color: Colors.orangeAccent,
+                  label: '2. Sulit',
+                  intervalLabel: previews[2] != null ? '${previews[2]!.intervalDays} hari' : '1 hari',
+                  color: const Color(0xFFF59E0B),
                   onTap: () => _rateCard(card, 2),
                 ),
                 const SizedBox(width: 8),
                 _buildRatingButton(
                   rating: 3,
-                  label: 'Good',
-                  intervalLabel: previews[3] != null ? '${previews[3]!.intervalDays}d' : '3d',
-                  color: Colors.blueAccent,
+                  label: '3. Bagus',
+                  intervalLabel: previews[3] != null ? '${previews[3]!.intervalDays} hari' : '3 hari',
+                  color: const Color(0xFF3B82F6),
                   onTap: () => _rateCard(card, 3),
                 ),
                 const SizedBox(width: 8),
                 _buildRatingButton(
                   rating: 4,
-                  label: 'Easy',
-                  intervalLabel: previews[4] != null ? '${previews[4]!.intervalDays}d' : '7d',
-                  color: Colors.greenAccent,
+                  label: '4. Mudah',
+                  intervalLabel: previews[4] != null ? '${previews[4]!.intervalDays} hari' : '7 hari',
+                  color: const Color(0xFF10B981),
                   onTap: () => _rateCard(card, 4),
                 ),
               ],
@@ -225,8 +225,13 @@ class _ReviewScreenState extends State<ReviewScreen> with SingleTickerProviderSt
               width: double.infinity,
               height: 50,
               child: FilledButton.tonal(
+                style: FilledButton.styleFrom(
+                  backgroundColor: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                  foregroundColor: const Color(0xFF818CF8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
                 onPressed: _flipCard,
-                child: const Text('Buka Jawaban (Ketuk Kartu)', style: TextStyle(fontSize: 16)),
+                child: const Text('Buka Jawaban (Ketuk Kartu)', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
               ),
             ),
         ],

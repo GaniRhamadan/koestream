@@ -261,4 +261,33 @@ class ApiService {
       throw ApiException('Error evaluasi shadowing: $e');
     }
   }
+
+  Future<GrammarExplainResponse> explainGrammar({
+    required String sentence,
+    required String targetLang,
+    String nativeLang = 'id',
+  }) async {
+    final uri = Uri.parse('$_baseUrl/api/v1/explain-grammar');
+    try {
+      final resp = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json; charset=utf-8'},
+        body: jsonEncode({
+          'sentence': sentence,
+          'target_lang': targetLang,
+          'native_lang': nativeLang,
+        }),
+      ).timeout(const Duration(seconds: 12));
+
+      if (resp.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(utf8.decode(resp.bodyBytes));
+        return GrammarExplainResponse.fromJson(data);
+      } else {
+        throw ApiException('Gagal mendapatkan penjelasan tata bahasa: status ${resp.statusCode}');
+      }
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Error eksplanasi tata bahasa: $e');
+    }
+  }
 }

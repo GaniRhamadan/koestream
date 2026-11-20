@@ -1149,18 +1149,28 @@ class YouTubePipelineService:
                 "quiet": True,
                 "extract_flat": True,
                 "skip_download": True,
-                "socket_timeout": 6,
+                "socket_timeout": 8,
             }
             with yt_dlp.YoutubeDL(search_opts) as ydl_search:
-                search_res = ydl_search.extract_info(f"ytsearch1:{search_query}", download=False)
-                entries = search_res.get("entries", [])
-                if entries and entries[0] and entries[0].get("id"):
-                    matched_yt_id = entries[0].get("id")
-                    yt_dur = entries[0].get("duration")
-                    if yt_dur and (not duration or duration < yt_dur):
-                        duration = yt_dur
-                        duration_ms = yt_dur * 1000
-                    logger.info("Auto-matched Spotify '%s' -> YouTube ID '%s' (durasi: %ss)", title, matched_yt_id, duration)
+                # Ambil hingga 5 kandidat agar kita bisa mencocokkan durasi asli lagu (menghindari versi radio/short edit yang terpotong)
+                search_res = ydl_search.extract_info(f"ytsearch5:{search_query}", download=False)
+                entries = [e for e in search_res.get("entries", []) if e and e.get("id")]
+                if entries:
+                    best_entry = entries[0]
+                    # Jika ada durasi acuan resmi dari Spotify, pilih video yang selisih durasinya paling kecil terhadap Spotify
+                    if duration and duration > 30:
+                        best_entry = min(
+                            entries,
+                            key=lambda e: abs((e.get("duration") or 0) - duration) if e.get("duration") else 999999
+                        )
+                    matched_yt_id = best_entry.get("id")
+                    yt_dur = best_entry.get("duration")
+                    if yt_dur:
+                        # Pertahankan durasi yang paling akurat (jika selisih <= 15s gunakan Spotify dur, jika tidak gunakan yt_dur)
+                        if not duration or abs(yt_dur - duration) > 15:
+                            duration = yt_dur
+                            duration_ms = yt_dur * 1000
+                    logger.info("Auto-matched Spotify '%s' -> YouTube ID '%s' (durasi: %ss, target Spotify: %ss)", title, matched_yt_id, duration, meta.get("duration"))
         except Exception as ex:
             logger.debug("Pencarian YouTube untuk trek Spotify '%s' dilewati: %s", title, ex)
 

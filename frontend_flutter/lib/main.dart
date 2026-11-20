@@ -11,62 +11,90 @@ void main() async {
   runApp(
     ChangeNotifierProvider<AppState>.value(
       value: appState,
-      child: const LingoStreamApp(),
+      child: const KoeStreamApp(),
     ),
   );
 }
 
-class LingoStreamApp extends StatelessWidget {
-  const LingoStreamApp({super.key});
+class KoeStreamApp extends StatelessWidget {
+  const KoeStreamApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
 
-    // Tema Gelap Modern Berkelas (Sleek Dark Mode)
+    // KoeStream High-End Zinc-950 Dark Theme (1:1 with Web styles.css)
     final darkTheme = ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
-      scaffoldBackgroundColor: const Color(0xFF0F121B),
+      scaffoldBackgroundColor: const Color(0xFF09090B), // --bg-primary
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.blueAccent,
+        seedColor: const Color(0xFF6366F1), // --primary (Soft Indigo)
         brightness: Brightness.dark,
-        surface: const Color(0xFF191C26),
+        surface: const Color(0xFF121215), // --bg-surface
+        onSurface: const Color(0xFFFAFAFA), // --text-primary
+        primary: const Color(0xFF6366F1),
+        secondary: const Color(0xFF1DB954), // --spotify-green
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Color(0xFF141721),
+        backgroundColor: Color(0xFF09090B),
         elevation: 0,
         centerTitle: false,
+        iconTheme: IconThemeData(color: Color(0xFFFAFAFA)),
+        titleTextStyle: TextStyle(
+          color: Color(0xFFFAFAFA),
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
+        ),
       ),
       cardTheme: CardThemeData(
-        color: const Color(0xFF1E222D),
+        color: const Color(0xFF121215),
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: Color(0xFF2B3040), width: 1),
+          side: const BorderSide(color: Color(0xFF27272A), width: 1),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: const Color(0xFF121215),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: Color(0xFF27272A), width: 1),
+        ),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Color(0xFF121215),
+        modalBackgroundColor: Color(0xFF121215),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
       ),
     );
 
-    // Tema Terang Elegan (Clean Light Mode)
+    // Clean Light Theme
     final lightTheme = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      scaffoldBackgroundColor: const Color(0xFFF7F8FA),
+      scaffoldBackgroundColor: const Color(0xFFF8FAFC),
       colorScheme: ColorScheme.fromSeed(
-        seedColor: Colors.blueAccent,
+        seedColor: const Color(0xFF2563EB),
         brightness: Brightness.light,
         surface: Colors.white,
+        onSurface: const Color(0xFF0F172A),
+        primary: const Color(0xFF2563EB),
+        secondary: const Color(0xFF16A34A),
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFFF8FAFC),
         elevation: 0,
         centerTitle: false,
-        iconTheme: IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Color(0xFF0F172A)),
         titleTextStyle: TextStyle(
-          color: Colors.black87,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
+          color: Color(0xFF0F172A),
+          fontSize: 17,
+          fontWeight: FontWeight.w700,
+          letterSpacing: -0.3,
         ),
       ),
       cardTheme: CardThemeData(
@@ -74,7 +102,14 @@ class LingoStreamApp extends StatelessWidget {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: Color(0xFFE5E7EB), width: 1),
+          side: const BorderSide(color: Color(0xFFE2E8F0), width: 1),
+        ),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        backgroundColor: Colors.white,
+        modalBackgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
       ),
     );

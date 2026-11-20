@@ -303,6 +303,19 @@ class MediaTrack {
 
 const List<MediaTrack> kKoeStreamPresetTracks = [
   MediaTrack(
+    id: '2BlDX1yfT0ea5wo0vjCKKa',
+    title: '光るなら (Hikaru Nara)',
+    artist: 'Goose house',
+    album: '光るなら (Shigatsu wa Kimi no Uso OP)',
+    duration: '04:12',
+    type: 'spotify',
+    url: 'https://open.spotify.com/track/2BlDX1yfT0ea5wo0vjCKKa',
+    artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d0000b2730735b9b1d06b65bbd8814825',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Lagu tema pembuka anime Shigatsu wa Kimi no Uso karya Goose house rilis resmi Spotify.',
+  ),
+  MediaTrack(
     id: '4Mo0vn7a03pJ19uESUrH5a',
     title: '可愛くてごめん',
     artist: 'HoneyWorks feat. ちゅーたん',
@@ -313,7 +326,7 @@ const List<MediaTrack> kKoeStreamPresetTracks = [
     artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0266e246eec1f1fb552ed0f017',
     language: 'ja',
     langName: 'Jepang (日本語)',
-    description: 'Lagu J-Pop viral HoneyWorks dengan lirik ceria dan kosa kata percakapan Jepang sehari-hari.',
+    description: 'Lagu J-Pop viral HoneyWorks dengan lirik ceria percakapan Jepang sehari-hari.',
   ),
   MediaTrack(
     id: '1HNvADmPBGAExeyIHkcJtd',
@@ -326,33 +339,20 @@ const List<MediaTrack> kKoeStreamPresetTracks = [
     artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0285b0876389c92ac31f514593',
     language: 'ja',
     langName: 'Jepang (日本語)',
-    description: 'Soundtrack legendaris anime Your Name karya Makoto Shinkai & RADWIMPS.',
+    description: 'Soundtrack legendaris anime Your Name karya Makoto Shinkai & RADWIMPS versi Spotify.',
   ),
   MediaTrack(
-    id: 'by4SYYWlhEs',
+    id: '0ofhAOxE9vBKTcPU2UQIAV',
     title: '夜に駆ける (Yoru ni Kakeru)',
     artist: 'YOASOBI',
     album: 'THE BOOK',
     duration: '04:21',
     type: 'spotify',
-    url: 'https://open.spotify.com/track/4Mo0vn7a03pJ19uESUrH5a?song=yoasobi',
+    url: 'https://open.spotify.com/track/0ofhAOxE9vBKTcPU2UQIAV',
     artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e02baf89eb11ec7c657805d2da0',
     language: 'ja',
     langName: 'Jepang (日本語)',
-    description: 'Lagu debut fenomena global YOASOBI terinspirasi novel Thanatos no Yuuwaku.',
-  ),
-  MediaTrack(
-    id: '9bZkp7q19f0',
-    title: '日常会話 - カフェでの待ち合わせ',
-    artist: 'Anime Immersion Audio #04',
-    album: 'Anime Nihongo Vol. 1',
-    duration: '00:45',
-    type: 'youtube',
-    url: 'https://www.youtube.com/watch?v=9bZkp7q19f0',
-    artwork: 'https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg',
-    language: 'ja',
-    langName: 'Jepang (日本語)',
-    description: 'Dialog percakapan anime dasar untuk mengasah pendengaran dan penguasaan partikel.',
+    description: 'Lagu debut fenomena global YOASOBI rilis resmi Spotify.',
   ),
   MediaTrack(
     id: '4GfK1qOF3uBWidbPlTCQRL',
@@ -366,6 +366,58 @@ const List<MediaTrack> kKoeStreamPresetTracks = [
     language: 'id',
     langName: 'Indonesia',
     description: 'Karya nostalgia Tulus dengan lirik puitis dan hangat tentang kenangan masa lalu.',
+  ),
+  MediaTrack(
+    id: 'fairytale_rybak',
+    title: 'Fairytale',
+    artist: 'Alexander Rybak',
+    album: 'Fairytales',
+    duration: '03:03',
+    type: 'spotify',
+    url: 'https://open.spotify.com/track/4Pj9wjcbbJq5m8yK7aE9p7',
+    artwork: 'https://image-cdn-ak.spotifycdn.com/image/ab67616d00001e0281b37805fa6054fa82649ea2',
+    language: 'en',
+    langName: 'Inggris',
+    description: 'Lagu pemenang Eurovision legendaris dari Alexander Rybak dengan melodi biola energik.',
+  ),
+  MediaTrack(
+    id: 'by4SYYWlhEs',
+    title: '夜に駆ける (MV Resmi)',
+    artist: 'YOASOBI',
+    album: 'YouTube Official MV',
+    duration: '04:21',
+    type: 'youtube',
+    url: 'https://www.youtube.com/watch?v=by4SYYWlhEs',
+    artwork: 'https://img.youtube.com/vi/by4SYYWlhEs/mqdefault.jpg',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Video musik animasi resmi YOASOBI di YouTube dengan visual cerita novel.',
+  ),
+  MediaTrack(
+    id: 'SnXkhkEvNIM',
+    title: '光るなら (Acoustic Session)',
+    artist: 'Goose house',
+    album: 'YouTube Live Studio',
+    duration: '04:19',
+    type: 'youtube',
+    url: 'https://www.youtube.com/watch?v=SnXkhkEvNIM',
+    artwork: 'https://img.youtube.com/vi/SnXkhkEvNIM/mqdefault.jpg',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Video sesi akustik live santai Goose house di YouTube (aransemen berbeda dari studio).',
+  ),
+  MediaTrack(
+    id: '9bZkp7q19f0',
+    title: '日常会話 - カフェでの待ち合わせ',
+    artist: 'Anime Immersion Audio #04',
+    album: 'Anime Nihongo Vol. 1',
+    duration: '00:45',
+    type: 'youtube',
+    url: 'https://www.youtube.com/watch?v=9bZkp7q19f0',
+    artwork: 'https://img.youtube.com/vi/9bZkp7q19f0/mqdefault.jpg',
+    language: 'ja',
+    langName: 'Jepang (日本語)',
+    description: 'Dialog percakapan anime dasar untuk mengasah pendengaran dan penguasaan partikel.',
   ),
 ];
 
@@ -621,5 +673,72 @@ class ShadowingResult {
     'normalized_user_curve': normalizedUserCurve,
     'feedback': feedback,
     'segment_feedbacks': segmentFeedbacks.map((e) => e.toJson()).toList(),
+  };
+}
+
+class GrammarTokenExplanation {
+  final String surface;
+  final String lemma;
+  final String pos;
+  final String? ruleNote;
+  final String meaning;
+
+  const GrammarTokenExplanation({
+    required this.surface,
+    required this.lemma,
+    required this.pos,
+    this.ruleNote,
+    required this.meaning,
+  });
+
+  factory GrammarTokenExplanation.fromJson(Map<String, dynamic> json) {
+    return GrammarTokenExplanation(
+      surface: json['surface'] as String? ?? '',
+      lemma: json['lemma'] as String? ?? '',
+      pos: json['pos'] as String? ?? '',
+      ruleNote: json['rule_note'] as String?,
+      meaning: json['meaning'] as String? ?? '-',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'surface': surface,
+    'lemma': lemma,
+    'pos': pos,
+    'rule_note': ruleNote,
+    'meaning': meaning,
+  };
+}
+
+class GrammarExplainResponse {
+  final String sentence;
+  final String targetLang;
+  final String summary;
+  final List<GrammarTokenExplanation> tokens;
+
+  const GrammarExplainResponse({
+    required this.sentence,
+    required this.targetLang,
+    required this.summary,
+    this.tokens = const [],
+  });
+
+  factory GrammarExplainResponse.fromJson(Map<String, dynamic> json) {
+    return GrammarExplainResponse(
+      sentence: json['sentence'] as String? ?? '',
+      targetLang: json['target_lang'] as String? ?? '',
+      summary: json['summary'] as String? ?? '',
+      tokens: (json['tokens'] as List<dynamic>?)
+              ?.map((e) => GrammarTokenExplanation.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'sentence': sentence,
+    'target_lang': targetLang,
+    'summary': summary,
+    'tokens': tokens.map((e) => e.toJson()).toList(),
   };
 }
